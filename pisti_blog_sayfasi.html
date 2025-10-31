@@ -117,6 +117,51 @@
       <li><strong>Son yığın planı:</strong> El sonunda son ortayı almak kritik fark yaratabilir.</li>
     </ul>
 
+    <h2>6) Pişti ve Algoritmik Oyun Kuramı</h2>
+    <p>Pişti, bir şans oyunu gibi görünse de, Algoritmik Oyun Kuramı (AGT) çerçevesinde analiz edildiğinde derin stratejik katmanlara sahip olduğu görülür. Ancak Othello gibi tam bilgiye dayalı oyunların aksine, Pişti eksik bilgi (rakibin elindeki kartlar bilinmez) prensibiyle çalışır.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Kategori</th>
+                <th>Pişti Kart Oyunu Analizi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Oyun Tipi</td>
+                <td><strong>Deterministik</strong>, N-kişilik (genellikle 2 veya 4), **Sıfır Toplamlı Değil**, **Eksik Bilgi**.</td>
+            </tr>
+            <tr>
+                <td>Tam Bilgi (Perfect Information)</td>
+                <td>**Eksik Bilgi (Imperfect Information)**: Oyuncular sadece kendi ellerindeki kartları ve yerdeki kartları görürler. Rakibin elindeki kartlar gizli bilgidir.</td>
+            </tr>
+            <tr>
+                <td>Strateji</td>
+                <td>**Eldeki kartlardan hangisinin ve ne zaman oynanacağıdır.** Yerdeki kartların toplam değerini, rakibin elindeki potansiyel kartları ve kart sayımını hesaba katma.</td>
+            </tr>
+            <tr>
+                <td>Nash Dengesi</td>
+                <td>**Optimal Strateji:** Her turda kart sayımı ve olasılık hesapları ile en yüksek puanı garanti altına almaya çalışmak. Eksik bilgi nedeniyle dengeye ulaşmak daha zordur.</td>
+            </tr>
+            <tr>
+                <td>Oyun Ağacı (Game Tree)</td>
+                <td>**Kısmi Bilgi Ağacı:** Sadece kendi elindeki kartlara göre dallanma olur. Dallanma faktörü eldeki kart sayısına (ilk elde $\approx 4$) ve yerdeki kartların durumuna bağlıdır.</td>
+            </tr>
+            <tr>
+                <td>Minimax Algoritması</td>
+                <td>**Ortak Algoritmalar:** Minimax, eksik bilgi nedeniyle direkt uygulanamaz. Genellikle **Beklenen Değer (Expected Value)** hesaplamaları ve **Monte Carlo Ağaç Araması (MCTS)** gibi olasılıksal yöntemler kullanılır.</td>
+            </tr>
+            <tr>
+                <td>Alpha-Beta Budama (Pruning)</td>
+                <td>**Uygulama:** Kısmi bilgi ağacında, ihtimaller üzerinden gereksiz aramaları azaltmak için olasılıksal budama teknikleri denenebilir, ancak tam Minimax performansı beklenmez.</td>
+            </tr>
+            <tr>
+                <td>Heuristik Fonksiyon</td>
+                <td>**Pişti Heuristiği:** Yerdeki kartların toplam puanı, oynanacak kartın Pişti yapma potansiyeli, kritik kartların (Vale, As, 10'luklar) rakibe bırakılma riski.</td>
+            </tr>
+        </tbody>
+    </table>
+
     
   </main>
   <footer>© 2025 Pişti Blog – Tüm Hakları Saklıdır</footer>
