@@ -165,6 +165,25 @@
         </tbody>
     </table>
 
+    <h2>7) Heuristik (Durum Değerlendirme) Örnekleri</h2>
+    <p>Pişti, eksik bilgi oyunu olduğu için, Heuristik fonksiyon sadece mevcut puan farkına değil, aynı zamanda **rakibin elindeki kartlara ilişkin olasılıksal tahminlere** ve **oynanan karta göre beklenen sonuçlara** dayanır. Her hamle, en yüksek **Beklenen Değer'i (Expected Value)** getiren kartı seçmek için değerlendirilir.</p>
+
+    <h3>Teorik Pişti Heuristik Formülü</h3>
+    <!-- LaTeX-style syntax for formulas -->
+    $$
+    \text{Değer} = (\text{Toplanan Puanlar Farkı}) \cdot W_1 + (\text{Kart Farkı}) \cdot W_2 + (\text{Kritik Kart Kontrolü}) \cdot W_3 + (\text{Anlık Yığın Riski}) \cdot W_4
+    $$
+
+    <p>Burada $W_1, W_2, W_3, W_4$ ağırlık katsayılarıdır (örneğin $W_1=1, W_2=1.5, W_3=3, W_4=5$).</p>
+
+    <h3>Heuristik Bileşenlerin Açıklaması</h3>
+    <ul>
+        <li><strong>Toplanan Puanlar Farkı (W1):</strong> Oyuncunun topladığı gerçek puanlar ile rakibin topladığı puanlar arasındaki farktır. En doğrudan ve en yüksek ağırlığa sahip olması gereken faktördür.</li>
+        <li><strong>Kart Farkı (W2):</strong> Toplanan toplam kart sayısındaki fark. Fazla kart toplamak +3 puan getireceği için önemlidir.</li>
+        <li><strong>Kritik Kart Kontrolü (W3):</strong> En önemli bileşenlerden biridir. Kalan yüksek puanlı kartların (A, J, ♦10, ♣2) **rakibin elinde bulunma olasılığının tahminine** dayanır. Örneğin, Pişti yapmak için atılan bir kartın, rakibe Pişti yapma fırsatı verme riski bu bileşenle cezalandırılır.</li>
+        <li><strong>Anlık Yığın Riski (W4):</strong> Mevcut olarak yerdeki yığının sahip olduğu potansiyel puan değeri. Yığın ne kadar değerliyse (içinde puanlı kartlar varsa), o yığını kaybetme riskini göze alan hamleler formülde cezalandırılırken, yığını alma olasılığı yüksek olan hamleler ödüllendirilir. Bu, özellikle yerdeki kart tekse ve Pişti yapma durumu varsa çok yüksek bir ağırlık alır.</li>
+    </ul>
+
     
   </main>
   <footer>© 2025 Pişti Blog – Tüm Hakları Saklıdır</footer>
