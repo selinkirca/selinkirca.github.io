@@ -200,19 +200,35 @@
     </table>
 
     <h2>8) 🎲 Beklenen Değer (Expected Value - EV) Hesaplamaları</h2>
-    <p>Beklenen Değer (EV), bir hamlenin uzun vadede ortalama olarak getireceği puanı tahmin etmek için kullanılır. Pişti, bir şans ve olasılık oyunu olduğundan, bir oyuncunun her turda EV'yi maksimize etmeye çalışması rasyoneldir. </p>
-    <p><strong>Temel Fikir:</strong> Olası her bir sonucun (pişti, normal alım, alamama) değerini, o sonucun gerçekleşme olasılığıyla çarparak toplamak.</p>
-    <div class="ev-formulu">
-      $$E(X) = \sum_{i=1}^{n} (x_i \cdot P(x_i))$$
-    </div>
-    <p><strong>Pişti Uygulaması:</strong> Bir yapay zeka oyuncusu, elindeki her bir kart için (örneğin bir 7'li) şu senaryoları düşünür ve olasılıkları tahmin eder:</p>
-    <ul>
-      <li>Bu kartı attığımda rakip 7'li ile alıp pişti yapma olasılığı nedir? (Negatif EV)</li>
-      <li>Bu kartı attığımda rakip J ile alıp 20 puanlık pişti yapma olasılığı nedir? (Çok Negatif EV)</li>
-      <li>Bu kartı attığımda rakibin alamama olasılığı nedir? (Pozitif EV - yerdeki kartların değerini biriktirme)</li>
-      <li>Bu kartı atarak yerdeki yığını alma olasılığım nedir? (Pozitif EV)</li>
-    </ul>
-    <p>Olasılıklar (P(x_i)), masada ve kendi elinde görülen kartlara göre rakibin elindeki gizli kartların dağılımını tahmin eden bir Bayesci Yaklaşım ile hesaplanabilir. En yüksek pozitif EV'ye sahip olan hamle tercih edilir.</p>
+
+<p>
+  Beklenen Değer (EV), bir hamlenin uzun vadede ortalama olarak getireceği puanı tahmin etmek için kullanılır.
+  Pişti, bir şans ve olasılık oyunu olduğundan, bir oyuncunun her turda EV'yi maksimize etmeye çalışması rasyoneldir.
+</p>
+
+<p><strong>Temel Fikir:</strong> 
+  Olası her bir sonucun (pişti, normal alım, alamama) değerini, o sonucun gerçekleşme olasılığıyla çarparak toplamak.
+</p>
+
+<div class="ev-formulu" style="text-align:center; margin: 20px 0; font-size: 1.2em;">
+  <span>$$E(X) = \sum_{i=1}^{n} \big( x_i \times P(x_i) \big)$$</span>
+</div>
+
+<p><strong>Pişti Uygulaması:</strong> 
+  Bir yapay zeka oyuncusu, elindeki her bir kart için (örneğin bir 7'li) şu senaryoları düşünür ve olasılıkları tahmin eder:
+</p>
+
+<ul>
+  <li>Bu kartı attığımda rakip 7'li ile alıp pişti yapma olasılığı nedir? (<em>Negatif EV</em>)</li>
+  <li>Bu kartı attığımda rakip J ile alıp 20 puanlık pişti yapma olasılığı nedir? (<em>Çok Negatif EV</em>)</li>
+  <li>Bu kartı attığımda rakibin alamama olasılığı nedir? (<em>Pozitif EV</em> – yerdeki kartların değerini biriktirme)</li>
+  <li>Bu kartı atarak yerdeki yığını alma olasılığım nedir? (<em>Pozitif EV</em>)</li>
+</ul>
+
+<p>
+  Olasılıklar (<em>P(x<sub>i</sub>)</em>), masada ve kendi elinde görülen kartlara göre rakibin elindeki gizli kartların dağılımını 
+  tahmin eden bir <strong>Bayesci Yaklaşım</strong> ile hesaplanabilir. En yüksek pozitif EV'ye sahip olan hamle tercih edilir.
+</p>
 
     <h2>9) 🌲 Monte Carlo Ağaç Araması (MCTS)</h2>
     <p>MCTS, Pişti gibi eksik bilgiye dayalı oyunlarda en iyi kararı bulmak için kullanılan güçlü bir algoritmadır. Geleneksel arama algoritmaları (Minimax) tam bilgi gerektirirken, MCTS rastgele simülasyonlar (play-out'lar) kullanır.</p>
