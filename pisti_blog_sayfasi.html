@@ -4,13 +4,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pişti – Pembe Tema Blog Sayfası</title>
-  <meta name="description" content="Pembe temalı Pişti blog sayfası: oyun ekranı, kurallar, puanlama ve strateji rehberi.">
+  <meta name="description" content="Pembe temalı Pişti blog sayfası: oyun ekranı, kurallar, puanlama, strateji ve Algoritmik Oyun Kuramı (EV, MCTS).">
+  <!-- Google Font: Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      /* Pembe temalı degrade arka plan */
       background: linear-gradient(180deg, #ffd1dc 0%, #ffb6c1 100%);
       color: #5a2a41;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     header {
       background-color: #ff8fb2;
@@ -23,21 +29,22 @@
       letter-spacing: .2px;
     }
     main {
+      flex-grow: 1;
       max-width: 900px;
-      margin: 32px auto 48px;
+      margin: 32px auto 0; /* Footer'a yer açmak için alttan marjin kaldırıldı */
       background: #ffe6ee;
       padding: 28px 24px;
-      border-radius: 20px;
+      border-radius: 20px 20px 0 0; /* Üst köşeleri yuvarlak, altı düz */
       box-shadow: 0 10px 20px rgba(0,0,0,.08);
-      text-align: left; /* başlık ve metin sola hizalı */
+      text-align: left;
     }
     h1, h2, h3 {
       margin: 0 0 12px;
       line-height: 1.25;
-      letter-spacing: .2px; /* kelimeler arası okuma rahatlığı */
+      letter-spacing: .2px;
     }
     h1 { font-size: 30px; text-align: center; color: #c2185b; }
-    h2 { font-size: 22px; color: #d63384; border-bottom: 2px solid #ffa6c9; padding-bottom: 6px; }
+    h2 { font-size: 22px; color: #d63384; border-bottom: 2px solid #ffa6c9; padding-bottom: 6px; margin-top: 24px;}
     h3 { font-size: 18px; color: #a81e63; }
     p, li {
       font-size: 16px;
@@ -57,8 +64,33 @@
     table { width: 100%; border-collapse: collapse; margin: 6px 0 16px; font-variant-numeric: tabular-nums; }
     th, td { padding: 10px 12px; border-bottom: 1px dashed #f3b3c7; }
     th { text-align: left; color: #b01863; background: #ffd8e6; }
+    .ev-formulu {
+        font-family: serif;
+        font-style: italic;
+        display: block;
+        text-align: center;
+        margin: 16px 0;
+        font-size: 18px;
+        color: #880e4f;
+        padding: 8px;
+        background: #fce4ec;
+        border-radius: 8px;
+    }
     footer {
-      margin: 0 auto; max-width: 900px; background: #ff8fb2; color: #fff; padding: 14px 16px; border-radius: 0 0 20px 20px; text-align: center; font-size: 14px;
+      margin: 0 auto; max-width: 900px; width: 100%; background: #ff8fb2; color: #fff; padding: 14px 16px; border-radius: 0 0 20px 20px; text-align: center; font-size: 14px;
+      box-sizing: border-box; /* padding'in max-width'i aşmamasını sağlar */
+    }
+
+    @media (max-width: 940px) {
+        main {
+            margin: 20px 10px 0;
+            padding: 20px;
+            border-radius: 16px 16px 0 0;
+        }
+        footer {
+            margin: 0 10px;
+            border-radius: 0 0 16px 16px;
+        }
     }
   </style>
 </head>
@@ -66,14 +98,16 @@
   <header>💖 Pişti Blog</header>
   <main>
     <h1>Pişti – Pembe Temalı Rehber</h1>
-    <img src="pişti.PNG" alt="Pişti oyunu ekran görüntüsü" />
+    <img src="https://placehold.co/860x200/ffbcd9/a81e63?text=Pişti+Oyun+Ekranı" alt="Pişti oyunu ekran görüntüsü" onerror="this.onerror=null; this.src='https://placehold.co/860x200/ffbcd9/a81e63?text=Pişti+Oyun+Ekranı';" />
     <p>Türü: Şans ve hafıza temelli kart oyunu. </p>
 
     <h2>1) Oyunun Tanımı</h2>
-    <p>Pişti kart saymaya ve şansa dayalı bir iskambil oyunudur. 2 veya 4 kişi ile 52'lik bir deste ile oynanır. Yalnız başına veya eşli oynanabilir. Oyunun amacı,her elde; </p> 
-    <p>Puan değerine sahip belirli kartları toplamak, </p> 
-    <p>Rakiplerden daha fazla kart toplamak,</p>
-    <p>Yerde tek başına duran kartın numara değeri olarak aynısını atarak "pişti" yapmak.</p>
+    <p>Pişti kart saymaya ve şansa dayalı bir iskambil oyunudur. 2 veya 4 kişi ile 52'lik bir deste ile oynanır. Yalnız başına veya eşli oynanabilir. Oyunun amacı, her elde; </p> 
+    <ul>
+      <li>Puan değerine sahip belirli kartları toplamak,</li> 
+      <li>Rakiplerden daha fazla kart toplamak,</li>
+      <li>Yerde tek başına duran kartın numara değeri olarak aynısını atarak "pişti" yapmak.</li>
+    </ul>
 
     <h2>2) Deste, Dağıtım ve Başlangıç</h2>
     <ul>
@@ -84,11 +118,11 @@
 
     <h2>3) Kurallar ve Oynanış</h2>
     <ol>
-      <li>Atılan kartın rütbesi, yerdeki en üst kartın rütbesiyle <strong>eşleşirse</strong> yerdeki tüm kartlar alınır.</li>
-      <li><strong>Vale (J)</strong>, yerde kart varsa tek başına ortayı alır.</li>
-      <li>Yerde <strong>tek kart</strong> varken eşleşme ya da J ile almak <strong>pişti</strong> sayılır ve ekstra puan kazandırır.</li>
+      <li>Atılan kartın rütbesi, yerdeki en üst kartın rütbesiyle **eşleşirse** yerdeki tüm kartlar alınır.</li>
+      <li>**Vale (J)**, yerde kart varsa tek başına ortayı alır.</li>
+      <li>Yerde **tek kart** varken eşleşme ya da J ile almak **pişti** sayılır ve ekstra puan kazandırır.</li>
       <li>Eşleşme yoksa kart yerde kalır ve yığın büyür.</li>
-      <li>Deste bittiğinde yerde kalan son yığın, <em>son alan</em> oyuncuya verilir ve puanlar hesaplanır.</li>
+      <li>Deste bittiğinde yerde kalan son yığın, *son alan* oyuncuya verilir ve puanlar hesaplanır.</li>
     </ol>
 
     <h2>4) Puanlama</h2>
@@ -98,7 +132,7 @@
       </thead>
       <tbody>
         <tr><td>As (A)</td><td>+1</td><td>Her As 1 puan eder.</td></tr>
-        <tr><td>Vale (J)</td><td>+1</td><td>Her Vale 1 puan eder.</td></tr>
+        <tr><tr><td>Vale (J)</td><td>+1</td><td>Her Vale 1 puan eder.</td></tr>
         <tr><td>♦10 (karo on)</td><td>+3</td><td>Özel yüksek kart.</td></tr>
         <tr><td>♣2 (sinek iki)</td><td>+2</td><td>Özel yüksek kart.</td></tr>
         <tr><td><strong>Pişti</strong></td><td>+10</td><td>Yerde tek kart varken eşleşme ile alma.</td></tr>
@@ -123,68 +157,74 @@
     <h2>7) Pişti ve Algoritmik Oyun Kuramı</h2>
     <p>Pişti, bir şans oyunu gibi görünse de, Algoritmik Oyun Kuramı (AGT) çerçevesinde analiz edildiğinde derin stratejik katmanlara sahip olduğu görülür. Ancak Othello gibi tam bilgiye dayalı oyunların aksine, Pişti eksik bilgi (rakibin elindeki kartlar bilinmez) prensibiyle çalışır.</p>
     <table>
-        <thead>
-            <tr>
-                <th>Kategori</th>
-                <th>Pişti Kart Oyunu Analizi</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Oyun Tipi</td>
-                <td><strong>Deterministik</strong>, N-kişilik (genellikle 2 veya 4), **Sıfır Toplamlı Değil**, **Eksik Bilgi**.</td>
-            </tr>
-            <tr>
-                <td>Eksik Bilgi (Imperfect Information)</td>
-                <td>Oyuncular sadece kendi ellerindeki kartları ve yerdeki kartları görürler. Rakibin elindeki kartlar gizli bilgidir.</td>
-            </tr>
-            <tr>
-                <td>Strateji</td>
-                <td>Eldeki kartlardan hangisinin ve ne zaman oynanacağıdır. Yerdeki kartların toplam değerini, rakibin elindeki potansiyel kartları ve kart sayımını hesaba katma.</td>
-            </tr>
-            <tr>
-                <td>Nash Dengesi</td>
-                <td>Optimal Strateji: Her turda kart sayımı ve olasılık hesapları ile en yüksek puanı garanti altına almaya çalışmak. Eksik bilgi nedeniyle dengeye ulaşmak daha zordur.</td>
-            </tr>
-            <tr>
-                <td>Oyun Ağacı (Game Tree)</td>
-                <td>Kısmi Bilgi Ağacı: Sadece kendi elindeki kartlara göre dallanma olur. Dallanma faktörü eldeki kart sayısına (ilk elde $\approx 4$) ve yerdeki kartların durumuna bağlıdır.</td>
-            </tr>
-            <tr>
-                <td>Ortak Algoritmalar</td>
-                <td>Minimax, eksik bilgi nedeniyle direkt uygulanamaz. Genellikle Beklenen Değer (Expected Value) hesaplamaları ve Monte Carlo Ağaç Araması (MCTS) gibi olasılıksal yöntemler kullanılır.</td>
-            </tr>
-            <tr>
-                <td>Alpha-Beta Budama (Pruning)</td>
-                <td>Uygulama: Kısmi bilgi ağacında, ihtimaller üzerinden gereksiz aramaları azaltmak için olasılıksal budama teknikleri denenebilir, ancak tam Minimax performansı beklenmez.</td>
-            </tr>
-            <tr>
-                <td>Heuristik Fonksiyon</td>
-                <td>Pişti Heuristiği: Yerdeki kartların toplam puanı, oynanacak kartın Pişti yapma potansiyeli, kritik kartların (Vale, As, 10'luklar) rakibe bırakılma riski.</td>
-            </tr>
-        </tbody>
+      <thead>
+        <tr>
+          <th>Kategori</th>
+          <th>Pişti Kart Oyunu Analizi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Oyun Tipi</td>
+          <td><strong>Deterministik</strong>, N-kişilik (genellikle 2 veya 4), **Sıfır Toplamlı Değil**, **Eksik Bilgi**.</td>
+        </tr>
+        <tr>
+          <td>Eksik Bilgi (Imperfect Information)</td>
+          <td>Oyuncular sadece kendi ellerindeki kartları ve yerdeki kartları görürler. Rakibin elindeki kartlar gizli bilgidir.</td>
+        </tr>
+        <tr>
+          <td>Strateji</td>
+          <td>Eldeki kartlardan hangisinin ve ne zaman oynanacağıdır. Yerdeki kartların toplam değerini, rakibin elindeki potansiyel kartları ve kart sayımını hesaba katma.</td>
+        </tr>
+        <tr>
+          <td>Nash Dengesi</td>
+          <td>Optimal Strateji: Her turda kart sayımı ve olasılık hesapları ile en yüksek puanı garanti altına almaya çalışmak. Eksik bilgi nedeniyle dengeye ulaşmak daha zordur.</td>
+        </tr>
+        <tr>
+          <td>Oyun Ağacı (Game Tree)</td>
+          <td>Kısmi Bilgi Ağacı: Sadece kendi elindeki kartlara göre dallanma olur. Dallanma faktörü eldeki kart sayısına ve yerdeki kartların durumuna bağlıdır.</td>
+        </tr>
+        <tr>
+          <td>Algoritmalar</td>
+          <td>Minimax, eksik bilgi nedeniyle direkt uygulanamaz. Genellikle Beklenen Değer (Expected Value) hesaplamaları ve Monte Carlo Ağaç Araması (MCTS) gibi olasılıksal yöntemler kullanılır.</td>
+        </tr>
+        <tr>
+          <td>Alpha-Beta Budama (Pruning)</td>
+          <td>Uygulama: Kısmi bilgi ağacında, ihtimaller üzerinden gereksiz aramaları azaltmak için olasılıksal budama teknikleri denenebilir, ancak tam Minimax performansı beklenmez.</td>
+        </tr>
+        <tr>
+          <td>Heuristik Fonksiyon</td>
+          <td>Pişti Heuristiği: Yerdeki kartların toplam puanı, oynanacak kartın Pişti yapma potansiyeli, kritik kartların (Vale, As, 10'luklar) rakibe bırakılma riski.</td>
+        </tr>
+      </tbody>
     </table>
 
-    <h2>7) Heuristik (Durum Değerlendirme) Örnekleri</h2>
-    <p>Pişti, eksik bilgi oyunu olduğu için, Heuristik fonksiyon sadece mevcut puan farkına değil, aynı zamanda **rakibin elindeki kartlara ilişkin olasılıksal tahminlere** ve **oynanan karta göre beklenen sonuçlara** dayanır. Her hamle, en yüksek **Beklenen Değer'i (Expected Value)** getiren kartı seçmek için değerlendirilir.</p>
-
-    <h3>Teorik Pişti Heuristik Formülü</h3>
-    <!-- LaTeX-style syntax for formulas -->
-    $$
-    \text{Değer} = (\text{Toplanan Puanlar Farkı}) \cdot W_1 + (\text{Kart Farkı}) \cdot W_2 + (\text{Kritik Kart Kontrolü}) \cdot W_3 + (\text{Anlık Yığın Riski}) \cdot W_4
-    $$
-
-    <p>Burada $W_1, W_2, W_3, W_4$ ağırlık katsayılarıdır (örneğin $W_1=1, W_2=1.5, W_3=3, W_4=5$).</p>
-
-    <h3>Heuristik Bileşenlerin Açıklaması</h3>
+    <h3>7) 🎲 Beklenen Değer (Expected Value - EV) Hesaplamaları</h3>
+    <p>Beklenen Değer (EV), bir hamlenin uzun vadede ortalama olarak getireceği puanı tahmin etmek için kullanılır. Pişti, bir şans ve olasılık oyunu olduğundan, bir oyuncunun her turda EV'yi maksimize etmeye çalışması rasyoneldir. </p>
+    <p><strong>Temel Fikir:</strong> Olası her bir sonucun (pişti, normal alım, alamama) değerini, o sonucun gerçekleşme olasılığıyla çarparak toplamak.</p>
+    <div class="ev-formulu">
+      $$E(X) = \sum_{i=1}^{n} (x_i \cdot P(x_i))$$
+    </div>
+    <p><strong>Pişti Uygulaması:</strong> Bir yapay zeka oyuncusu, elindeki her bir kart için (örneğin bir 7'li) şu senaryoları düşünür ve olasılıkları tahmin eder:</p>
     <ul>
-        <li><strong>Toplanan Puanlar Farkı (W1):</strong> Oyuncunun topladığı gerçek puanlar ile rakibin topladığı puanlar arasındaki farktır. En doğrudan ve en yüksek ağırlığa sahip olması gereken faktördür.</li>
-        <li><strong>Kart Farkı (W2):</strong> Toplanan toplam kart sayısındaki fark. Fazla kart toplamak +3 puan getireceği için önemlidir.</li>
-        <li><strong>Kritik Kart Kontrolü (W3):</strong> En önemli bileşenlerden biridir. Kalan yüksek puanlı kartların (A, J, ♦10, ♣2) **rakibin elinde bulunma olasılığının tahminine** dayanır. Örneğin, Pişti yapmak için atılan bir kartın, rakibe Pişti yapma fırsatı verme riski bu bileşenle cezalandırılır.</li>
-        <li><strong>Anlık Yığın Riski (W4):</strong> Mevcut olarak yerdeki yığının sahip olduğu potansiyel puan değeri. Yığın ne kadar değerliyse (içinde puanlı kartlar varsa), o yığını kaybetme riskini göze alan hamleler formülde cezalandırılırken, yığını alma olasılığı yüksek olan hamleler ödüllendirilir. Bu, özellikle yerdeki kart tekse ve Pişti yapma durumu varsa çok yüksek bir ağırlık alır.</li>
+      <li>Bu kartı attığımda rakip 7'li ile alıp pişti yapma olasılığı nedir? (Negatif EV)</li>
+      <li>Bu kartı attığımda rakip J ile alıp 20 puanlık pişti yapma olasılığı nedir? (Çok Negatif EV)</li>
+      <li>Bu kartı attığımda rakibin alamama olasılığı nedir? (Pozitif EV - yerdeki kartların değerini biriktirme)</li>
+      <li>Bu kartı atarak yerdeki yığını alma olasılığım nedir? (Pozitif EV)</li>
     </ul>
+    <p>Olasılıklar (P(x_i)), masada ve kendi elinde görülen kartlara göre rakibin elindeki gizli kartların dağılımını tahmin eden bir Bayesci Yaklaşım ile hesaplanabilir. En yüksek pozitif EV'ye sahip olan hamle tercih edilir.</p>
 
-    
+    <h3>8) 🌲 Monte Carlo Ağaç Araması (MCTS)</h3>
+    <p>MCTS, Pişti gibi eksik bilgiye dayalı oyunlarda en iyi kararı bulmak için kullanılan güçlü bir algoritmadır. Geleneksel arama algoritmaları (Minimax) tam bilgi gerektirirken, MCTS rastgele simülasyonlar (play-out'lar) kullanır.</p>
+    <p><strong>MCTS Nasıl Çalışır (Pişti'ye Özel):</strong></p>
+    <ol>
+      <li>Seçim: Mevcut oyun durumundan başlanır ve geçmişte iyi performans göstermiş yollar (düğümler) seçilir.</li>
+      <li>Genişletme: Henüz denenmemiş bir hamleye ulaşıldığında ağaç yeni bir düğümle genişletilir (Yeni bir kart atma hamlesi).</li>
+      <li>Simülasyon (Play-out): Bu yeni düğümden itibaren, bilinmeyen tüm kartlar (rakip eli, deste) rastgele olarak dağıtılır ve oyunun sonuna kadar hızlıca rastgele oynanır. Oyunun sonunda elde edilen puan kaydedilir.</li>
+      <li>Geri Yayılım: Bu simülasyonun sonucu (kazanılan puan), başlangıç düğümüne kadar ağaçtaki tüm düğümlere geri gönderilir ve o düğümlerin istatistikleri (kaç kez denendi, ortalama ne kadar kazandırdı) güncellenir.</li>
+    </ol>
+    <p>Binlerce simülasyonun ardından, en yüksek ortalama puana (EV'ye) sahip olan hamle, o anki en optimal strateji olarak seçilir. MCTS bu sayede, teorik olarak hesaplanması imkansız olan tüm olasılıkları, pratik simülasyonlar yoluyla yaklaşık olarak hesaplar.</p>
+
   </main>
   <footer>© 2025 Pişti Blog – Tüm Hakları Saklıdır</footer>
 </body>
