@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skybound SHM - Gelişmiş Yönetim Paneli</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .glass-panel {
+            background: rgba(31, 41, 55, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(75, 85, 99, 0.3);
+        }
+        
+        .status-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Bildirim (Toast) Stili */
+        #notification-toast {
+            position: fixed;
+            top: 20px;
+            right: -450px;
+            width: 380px;
+            background: rgba(220, 38, 38, 0.95);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            transition: right 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-left: 6px solid #fff;
+        }
+
+        #notification-toast.show {
+            right: 20px;
+        }
+
+        .data-stream {
+            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+            background-size: 200% 100%;
+            animation: stream 1.5s linear infinite;
+        }
+
+        @keyframes stream {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-slate-200 min-h-screen font-sans overflow-hidden">
+
+    <div id="notification-toast" class="flex items-start gap-4">
+        <div class="bg-white p-2 rounded-full shadow-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+        </div>
+        <div>
+            <h4 class="font-black text-xl tracking-tight">HASAR TESPİT EDİLDİ!</h4>
+            <p class="text-sm font-medium opacity-90" id="toast-message">Kompozit yapıda kritik delaminasyon algılandı.</p>
+        </div>
+    </div>
+
+    <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
+
+    <div class="flex flex-col h-screen">
+        <header class="p-4 border-b border-slate-800 flex justify-between items-center bg-[#111827]">
+            <div class="flex items-center gap-3">
+                <div class="w-3 h-3 bg-green-500 rounded-full status-pulse"></div>
+                <h1 class="text-xl font-bold tracking-tighter text-blue-400">SKYBOUND SHM | CORE INTERFACE</h1>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="text-xs font-mono text-slate-500 uppercase">Sistem Durumu: <span class="text-green-400">Ready</span></div>
+                <div class="text-xs font-mono text-slate-400" id="clock">--:--:--</div>
+            </div>
+        </header>
+
+        <div class="flex flex-1 overflow-hidden">
+            <aside class="w-80 p-6 border-r border-slate-800 space-y-8 bg-[#111827]/50">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Sinyal Konfigürasyonu</label>
+                    <div class="mt-4 space-y-4">
+                        <select class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option>Pitch-Catch (Active Sensing)</option>
+                            <option>Pulse-Echo (Reflection)</option>
+                        </select>
+                        <div class="p-3 bg-blue-900/20 border border-blue-800/50 rounded-lg">
+                            <p class="text-[10px] text-blue-400 font-bold uppercase">Sinyal Tipi</p>
+                            <p class="text-xs text-blue-200 mt-1">Hanning Pencereli Tone-Burst</p>
+                        </div>
+                        <button onclick="startAcquisition()" id="btn-trigger" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-xl font-black tracking-wide transition-all shadow-lg shadow-blue-900/20 active:scale-95">
+                            ANALİZİ BAŞLAT
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
+                    <h4 class="text-[10px] font-bold text-yellow-500 uppercase mb-3 tracking-widest">Donanım Detayları</h4>
+                    <div class="text-[11px] space-y-2 font-mono text-slate-400">
+                        <div class="flex justify-between"><span>SENSÖR:</span> <span class="text-white">NAVY II PZT</span></div>
+                        <div class="flex justify-between"><span>DAWK:</span> <span class="text-white">100 MS/s</span></div>
+                        <div class="flex justify-between font-bold text-blue-400"><span>MOD:</span> <span>LAMB WAVE</span></div>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="flex-1 p-8 overflow-y-auto space-y-6">
+                <div class="glass-panel p-6 rounded-2xl shadow-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="font-bold text-slate-300 uppercase tracking-tight">Sinyal İzleme (DAQ Stream)</h2>
+                        <div class="h-1 w-48 bg-slate-800 rounded overflow-hidden">
+                            <div id="stream-bar" class="h-full data-stream w-0 transition-all duration-300"></div>
+                        </div>
+                    </div>
+                    <div class="h-[350px]">
+                        <canvas id="liveChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="glass-panel p-6 rounded-2xl border-b-4 border-blue-500">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Sistem Mesajı</p>
+                        <h3 id="status-text" class="text-2xl font-black mt-1 text-blue-400">BEKLEMEDE</h3>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl border-b-4 border-red-500">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">TensorFlow AI Skoru</p>
+                        <h3 id="ai-score" class="text-3xl font-black mt-1 text-slate-700">--</h3>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl border-b-4 border-green-500">
+                        <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Hasar Modu</p>
+                        <h3 id="damage-mode" class="text-xl font-black mt-1 text-green-400">YOK</h3>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Saat İşleyişi
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('tr-TR');
+        }, 1000);
+
+        // Chart.js Kurulumu
+        const ctx = document.getElementById('liveChart').getContext('2d');
+        let chartData = Array(60).fill(0);
+        
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(60).fill(''),
+                datasets: [{
+                    data: chartData,
+                    borderColor: '#3b82f6',
+                    borderWidth: 3,
+                    pointRadius: 0,
+                    tension: 0.4,
+                    fill: true,
+                    backgroundColor: 'rgba(59, 130, 246, 0.05)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false,
+                scales: {
+                    y: { min: -1.5, max: 1.5, grid: { color: '#1e293b' }, ticks: { display: false } },
+                    x: { grid: { display: false } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Veri Toplama ve Analiz Fonksiyonu
+        let isAcquiring = false;
+
+        function startAcquisition() {
+            if(isAcquiring) return;
+            
+            isAcquiring = true;
+            resetUI();
+            
+            const btn = document.getElementById('btn-trigger');
+            const streamBar = document.getElementById('stream-bar');
+            
+            btn.innerText = "VERİ OKUNUYOR...";
+            btn.classList.replace('bg-blue-600', 'bg-slate-700');
+            streamBar.style.width = '100%';
+
+            let step = 0;
+            const interval = setInterval(() => {
+                // Hanning Pencereli Tone-Burst Sinyal Simülasyonu
+                const tone = Math.sin(step * 0.7) * Math.exp(-Math.pow(step - 30, 2) / 150); 
+                const noise = (Math.random() - 0.5) * 0.15;
+                
+                chartData.push(tone + noise);
+                chartData.shift();
+                myChart.update();
+                
+                step++;
+                if(step > 120) {
+                    clearInterval(interval);
+                    triggerDamageFound();
+                }
+            }, 30);
+        }
+
+        function triggerDamageFound() {
+            // 1. Yazısal Güncellemeler
+            document.getElementById('status-text').innerText = "KRİTİK HATA";
+            document.getElementById('status-text').className = "text-2xl font-black mt-1 text-red-500";
+            document.getElementById('ai-score').innerText = "%94.8";
+            document.getElementById('ai-score').className = "text-3xl font-black mt-1 text-red-500";
+            document.getElementById('damage-mode').innerText = "DELAMİNASYON";
+
+            // 2. Sesli Bildirim
+            const sound = document.getElementById('alert-sound');
+            sound.play().catch(e => console.log("Ses çalma izni gerekiyor."));
+
+            // 3. Sağ Üstten Bildirimi Çıkar
+            const toast = document.getElementById('notification-toast');
+            toast.classList.add('show');
+
+            // 4. Butonu Eski Hale Getir
+            const btn = document.getElementById('btn-trigger');
+            btn.innerText = "YENİ ANALİZ BAŞLAT";
+            btn.classList.replace('bg-slate-700', 'bg-blue-600');
+            
+            isAcquiring = false;
+
+            // 6 saniye sonra bildirimi kapat
+            setTimeout(() => { toast.classList.remove('show'); }, 6000);
+        }
+
+        function resetUI() {
+            document.getElementById('notification-toast').classList.remove('show');
+            document.getElementById('status-text').innerText = "ANALİZ EDİLİYOR";
+            document.getElementById('status-text').className = "text-2xl font-black mt-1 text-blue-400";
+            document.getElementById('ai-score').innerText = "--";
+            document.getElementById('ai-score').className = "text-3xl font-black mt-1 text-slate-700";
+            document.getElementById('damage-mode').innerText = "TARANIYOR...";
+        }
+    </script>
+</body>
+</html>
